@@ -50,7 +50,10 @@ def process_author(
     :return:
     """
     if author_text:
-        author_xml_str = grobid_client.process_header_names(author_text, logfile)
+        try:
+            author_xml_str = grobid_client.process_header_names(author_text, logfile)
+        except:
+            author_xml_str = None
         if author_xml_str:
             author_soup = BeautifulSoup(author_xml_str, 'xml')
             author_entry = get_author_data_from_grobid_xml(author_soup)
@@ -87,7 +90,7 @@ def process_bibentry(bib_text: str, grobid_client: GrobidClient, logfile: str):
         if not bib_entry['raw_text']:
             bib_entry['raw_text'] = bib_string
         return bib_entry
-    return None
+    return {'raw_text': bib_string, 'title': None, 'authors': None}
 
 
 def replace_ref_tokens(sp: BeautifulSoup, el: bs4.element.Tag, ref_map: Dict):
